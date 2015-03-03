@@ -28,7 +28,7 @@ app.use(session({
   saveUninitialized: true,
   cookie: { secure: true }
 }));
-app.use(util.checkUser);
+app.use(util.checkSession);
 
 
 app.get('/',
@@ -91,6 +91,28 @@ function(req, res) {
   res.render('login');
 });
 
+app.post('/login',
+function(req, res) {
+  var uri = req.body.url;
+  var username = req.body.username;
+  var password = req.body.password;
+
+  new User({'username': username}).fetch().then(function(found) {
+    console.log(found);
+    if (found) {
+      // res.redirect('/login');
+      found.checkPassword(password, function(err, match){
+        req.session.regenerate(function() {
+          req.session.user = username;
+          res.redirect('/');
+        });
+      });
+    } else {
+      res.redirect('/login');
+    }
+  });
+});
+
 app.get('/signup',
 function(req, res) {
   res.render('signup');
@@ -104,16 +126,17 @@ function(req, res) {
 
   new User({'username': username}).fetch().then(function(found) {
     if (found) {
+      //console.log(found);
       res.redirect('/signup');
     } else {
       var user = new User({
         'username': username,
         'password': password
       });
-
+      console.log(user);
       user.save().then(function(newUser) {
         Users.add(newUser);
-        res.send(201);
+        res.send(201, newUser);
       });
     }
   });

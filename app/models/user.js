@@ -12,6 +12,10 @@ var User = db.Model.extend({
     bcrypt.hash(password, null, null, function(err, hash) {
       this.set('password', hash);
     }.bind(this));
+  },
+
+  checkPassword: function(password, callback){
+    bcrypt.compare(password, this.get('password'), callback);
   }
 });
 
