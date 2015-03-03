@@ -8,14 +8,17 @@ var User = db.Model.extend({
   hasTimestamps: true,
 
   initialize: function(){
-    var password = this.get('password');
-    bcrypt.hash(password, null, null, function(err, hash) {
-      this.set('password', hash);
-    }.bind(this));
   },
 
   checkPassword: function(password, callback){
     bcrypt.compare(password, this.get('password'), callback);
+  },
+
+  savePassword: function(password, callback){
+    bcrypt.hash(password, null, null, function(err, hash){
+      this.set('password', hash);
+      this.save().then(callback);
+    }.bind(this));
   }
 });
 
