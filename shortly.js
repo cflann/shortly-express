@@ -28,26 +28,27 @@ app.use(session({
   saveUninitialized: true,
   cookie: { secure: true }
 }));
+app.use(util.checkUser);
 
 
-app.get('/', util.checkUser,
+app.get('/',
 function(req, res) {
   res.render('index');
 });
 
-app.get('/create', util.checkUser,
+app.get('/create',
 function(req, res) {
   res.render('index');
 });
 
-app.get('/links', util.checkUser,
+app.get('/links',
 function(req, res) {
   Links.reset().fetch().then(function(links) {
     res.send(200, links.models);
   });
 });
 
-app.post('/links', util.checkUser,
+app.post('/links',
 function(req, res) {
   var uri = req.body.url;
 
@@ -94,6 +95,8 @@ app.get('/signup',
 function(req, res) {
   res.render('signup');
 });
+
+
 
 /************************************************************/
 // Handle the wildcard route last - if all other routes fail
