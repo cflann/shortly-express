@@ -105,7 +105,6 @@ function(req, res) {
   new User({'username': username}).fetch().then(function(found) {
     if (found) {
       found.checkPassword(password, function(match){
-        console.log('match',match);
         if (match) {
           req.session.regenerate(function() {
             req.session.user = username;
@@ -139,13 +138,29 @@ function(req, res) {
       var user = new User({
         'username': username,
         'password': password
-      }).on('saved', function(model) {
-        Users.add(model);
-        req.session.regenerate(function() {
-          req.session.user = username;
-          res.redirect('/');
-        });
       });
+      // .on('saved', function(model) {
+      //   Users.add(model);
+      //   req.session.regenerate(function() {
+      //     req.session.user = username;
+      //     res.redirect('/');
+      //   });
+      // });
+      user.savePassword(password)
+        .then(function(err, hash) {
+          user.set('password', hash);
+          return user.save();
+        })
+        .then(function(newUser) {
+          Users.add(newUser);
+          req.session.regenerate(function() {
+            req.session.user = username;
+            res.redirect('/');
+          });
+        })
+        .catch(function(err) {
+          console.error(err);
+        });
     }
   });
 });

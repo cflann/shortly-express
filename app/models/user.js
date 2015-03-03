@@ -1,6 +1,6 @@
 var db = require('../config');
-var bcrypt = require('bcrypt-nodejs');
 var Promise = require('bluebird');
+var bcrypt = Promise.promisifyAll(require('bcrypt-nodejs'));
 
 var User = db.Model.extend({
 
@@ -8,22 +8,22 @@ var User = db.Model.extend({
   hasTimestamps: true,
 
   initialize: function(params){
-    this.savePassword(params.password);
+    // if (params.hasOwnProperty('password')) {
+    //   this.savePassword(params.password);
+    // }
   },
 
   checkPassword: function(password, callback){
-    console.log('password argument:', password);
-    console.log('PASSWORD:',this.get('password'));
     bcrypt.compare(password, this.get('password'), function(err, match) {
       callback(match);
     });
   },
 
   savePassword: function(password){
-    bcrypt.hash(password, null, null, function(err, hash){
-      this.set('password', hash);
-      this.save();
-    }.bind(this));
+    return bcrypt.hashAsync(password, null, null);//, function(err, hash){
+    //   this.set('password', hash);
+    //   resolve;
+    // }.bind(this));
   }
 });
 
