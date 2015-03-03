@@ -7,17 +7,18 @@ var User = db.Model.extend({
   tableName: 'users',
   hasTimestamps: true,
 
-  initialize: function(){
+  initialize: function(params){
+    this.savePassword(params.password);
   },
 
   checkPassword: function(password, callback){
     bcrypt.compare(password, this.get('password'), callback);
   },
 
-  savePassword: function(password, callback){
+  savePassword: function(password){
     bcrypt.hash(password, null, null, function(err, hash){
       this.set('password', hash);
-      this.save().then(callback);
+      this.save();
     }.bind(this));
   }
 });

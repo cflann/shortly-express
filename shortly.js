@@ -99,6 +99,7 @@ function(req, res) {
 
   new User({'username': username}).fetch().then(function(found) {
     if (found) {
+      console.log(found);
       // res.redirect('/login');
       found.checkPassword(password, function(err, match){
         if (match) {
@@ -131,11 +132,14 @@ function(req, res) {
       res.redirect('/signup');
     } else {
       var user = new User({
-        'username': username
-      });
-      user.savePassword(password, function(newUser) {
-        Users.add(newUser);
-        res.send(201, newUser);
+        'username': username,
+        'password': password
+      }).on('saved', function(model) {
+        Users.add(model);
+        req.session.regenerate(function() {
+          req.session.user = username;
+          res.redirect('/');
+        });
       });
     }
   });
