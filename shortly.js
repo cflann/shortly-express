@@ -96,7 +96,28 @@ function(req, res) {
   res.render('signup');
 });
 
+app.post('/signup',
+function(req, res) {
+  var uri = req.body.url;
+  var username = req.body.username;
+  var password = req.body.password;
 
+  new User({'username': username}).fetch().then(function(found) {
+    if (found) {
+      res.send(302, {Location: '/signup'});
+    } else {
+      var user = new User({
+        'username': username,
+        'password': password
+      });
+
+      user.save().then(function(newUser) {
+        Users.add(newUser);
+        res.send(201);
+      });
+    }
+  });
+});
 
 /************************************************************/
 // Handle the wildcard route last - if all other routes fail
