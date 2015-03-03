@@ -85,6 +85,11 @@ function(req, res) {
 /************************************************************/
 // Write your authentication routes here
 /************************************************************/
+app.get('/logout', function(req, res){
+  req.session.destroy(function(){
+    res.redirect('/login');
+  });
+});
 
 app.get('/login',
 function(req, res) {
