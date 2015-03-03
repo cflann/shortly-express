@@ -104,7 +104,7 @@ function(req, res) {
 
   new User({'username': username}).fetch().then(function(found) {
     if (found) {
-      res.send(302, {Location: '/signup'});
+      res.redirect('/signup');
     } else {
       var user = new User({
         'username': username,
