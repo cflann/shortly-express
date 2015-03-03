@@ -12,7 +12,11 @@ var User = db.Model.extend({
   },
 
   checkPassword: function(password, callback){
-    bcrypt.compare(password, this.get('password'), callback);
+    console.log('password argument:', password);
+    console.log('PASSWORD:',this.get('password'));
+    bcrypt.compare(password, this.get('password'), function(err, match) {
+      callback(match);
+    });
   },
 
   savePassword: function(password){

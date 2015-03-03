@@ -104,14 +104,15 @@ function(req, res) {
 
   new User({'username': username}).fetch().then(function(found) {
     if (found) {
-      console.log(found);
-      // res.redirect('/login');
-      found.checkPassword(password, function(err, match){
+      found.checkPassword(password, function(match){
+        console.log('match',match);
         if (match) {
           req.session.regenerate(function() {
             req.session.user = username;
             res.redirect('/');
           });
+        } else {
+          res.redirect('/login');
         }
       });
     } else {
@@ -133,7 +134,6 @@ function(req, res) {
 
   new User({'username': username}).fetch().then(function(found) {
     if (found) {
-      //console.log(found);
       res.redirect('/signup');
     } else {
       var user = new User({
