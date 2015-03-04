@@ -28,27 +28,27 @@ app.use(session({
   saveUninitialized: true,
   cookie: { secure: false }
 }));
-app.use(util.checkSession);
+//app.use(util.checkSession);
 
 
-app.get('/',
+app.get('/', util.checkSession,
 function(req, res) {
   res.render('index');
 });
 
-app.get('/create',
+app.get('/create', util.checkSession,
 function(req, res) {
   res.render('index');
 });
 
-app.get('/links',
+app.get('/links', util.checkSession,
 function(req, res) {
   Links.reset().fetch().then(function(links) {
     res.send(200, links.models);
   });
 });
 
-app.post('/links',
+app.post('/links', util.checkSession,
 function(req, res) {
   var uri = req.body.url;
 
